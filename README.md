@@ -20,7 +20,7 @@ Redshift of the Lens| 0.228| Same
 Effective radius|         -          |1.526 "
 Apparent magnitude|     -        | 17.654
 Index of Sersic|          -          | 4  
-
+Redshfit of the source| zs = 2.54 | -
 
 
 ### Lensed Images
