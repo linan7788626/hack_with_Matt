@@ -35,10 +35,14 @@ Index of Sersic|          -          | 4
 
 ![ugr](https://cloud.githubusercontent.com/assets/1016652/17046689/b4c857da-4f9b-11e6-910c-ed2ea0552832.jpg)
 ![gri](https://cloud.githubusercontent.com/assets/1016652/17046690/b6f9755c-4f9b-11e6-8bb2-b4f6946ddb3e.jpg)
-
+ 
 ### Future work
-- Try Fundamental planes with larger samples of observed galaxies, and more realistic index of Sersic profile.  
-- Create the instance catalog of source galaxies (host galaxies) according to the lensed quasars or supernovas.
+- Images of Lenses
+    - Try Fundamental planes with larger samples of observed galaxies, and more realistic index of Sersic profile. 
+    - How to pick a reasonable SED according to the parameters we have so far? (Thomas Collett's Code: [LensPoP](https://github.com/tcollett/LensPop)) 
+- Images of Sources 
+     - Create the instance catalog of source galaxies (host galaxies) according to the lensed quasars or supernovas.
+     - Angular position, ellipticity, orientation, Effective radius, apparent magnitude, SED....
 - Combine lens galaxies, lensed galaxies, and lensed quasars (supernovas) together for Twinkles.
 - Think about integrating ray-tracing routines into PhoSim to parameterize the strongly lensed arcs.
 
