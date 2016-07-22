@@ -33,11 +33,7 @@ Index of Sersic|          -          | 4
 
 ### Galaxy-galaxy Strong lensing in PhoSim
 
-![new_lens](https://cloud.githubusercontent.com/assets/14111037/17041473/e3b3de00-4f6b-11e6-97e8-b7f344d1a892.jpg)
-
-![new_gal_gri](https://cloud.githubusercontent.com/assets/14111037/17041496/0448bc94-4f6c-11e6-90d1-eee6a23f3e66.jpg)
-
-
+![gg_sl_phosim](https://cloud.githubusercontent.com/assets/1016652/17046526/006b0ae0-4f9a-11e6-9464-5050444fcae2.jpg))
 
 ### Future work
 - Try Fundamental planes with larger samples of observed galaxies, and more realistic index of Sersic profile.  
