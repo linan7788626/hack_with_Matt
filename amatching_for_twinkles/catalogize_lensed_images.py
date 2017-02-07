@@ -167,7 +167,6 @@ def sersic_L_Rcut(Ieff,Reff,ndex,Rcut=100):
 def sersic_Iebar_to_Ieff(Iebar,Reff,ndex):
     bn = 2.0*ndex-1/3.0+0.009876/ndex
     res = Iebar/(2.0*ndex*(np.e**bn/(bn**(2.0*ndex)))*spf.gammainc(2.0*ndex,bn)*spf.gamma(2.0*ndex))
-    print (2.0*ndex*(np.e**bn/(bn**(2.0*ndex)))*spf.gammainc(2.0*ndex,bn)*spf.gamma(2.0*ndex))
     return res
 
 def sersic_Abs_MAG_Rcut(Ieff,Reff,ndex):
@@ -273,7 +272,6 @@ if __name__ == '__main__':
     zs = lens.ZSRC[0]
     ql  = 1.0 - lens.ELLIP[0]
     phi= lens.PHIE[0]
-    print ql
     #how to calculate I_eff_mag, R_eff_arc, qs, phs
 
     #source_cat = [ysc1, ysc2, mag_tot, R_eff_arc_a, R_eff_arc_a, phs, zs]
@@ -305,23 +303,13 @@ if __name__ == '__main__':
     Reff = Reff_arc*Da_s/apr*1e6 # pc
     ndex = 4.0
     Ieff = sersic_mag_tot_to_Ieff(mag_srcs,Reff,ndex,zs)
-    print Reff, Ieff
     Ltot = sersic_L_Rcut(Ieff,Reff,ndex)
 
     MAG = sersic_Abs_MAG_Rcut(Ieff,Reff,ndex)
-    print MAG
     mueff = sersic_mag_tot_to_mueff(24,Reff,ndex,2.0)
     Ieff2 = 10.0**((21.572+5.12-mueff)*0.4)
     #Ltmp = np.sum(sersic_2d(xi1,xi2,0.0,0.0,Ieff,Reff_arc,0.5,35.0,ndex))*(dsx*Da_s/apr*1e6)**2.0
     Ltmp = np.sum(lensed_images)*(dsx*Da_s/apr*1e6)**2.0
     magtmp = 5.12 - 2.5*np.log10(Ltmp)+5.0*np.log10(Dl_s*1e6/10.0)
 
-    #print magtmp
-
     pyfits.writeto(str(magtmp)+"_lensed_images.fits",lensed_images, clobber=True)
-
-
-    #pl.figure()
-    #pl.contourf(xi1,xi2,lensed_images)
-    #pl.colorbar()
-    #pl.show()
