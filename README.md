@@ -35,6 +35,8 @@ Redshfit of the source| zs = 2.54 | -
 
 ![ugr](https://cloud.githubusercontent.com/assets/1016652/17046689/b4c857da-4f9b-11e6-910c-ed2ea0552832.jpg)
 ![gri](https://cloud.githubusercontent.com/assets/1016652/17046690/b6f9755c-4f9b-11e6-8bb2-b4f6946ddb3e.jpg)
+https://github.com/linan7788626/hack_with_Matt/blob/master/9.png
+https://github.com/linan7788626/hack_with_Matt/blob/master/w.png
  
 ### Future work
 - Images of Lenses
