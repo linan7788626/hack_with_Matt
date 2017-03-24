@@ -2,7 +2,7 @@
 import numpy as np
 from astropy.cosmology import Planck13 as p13
 import catalogize_lensed_images as sersic
-import pyfits
+import astropy.io.fits as pyfits
 apr = 206269.43
 
 def return_re_le(sv_input,sv_array,re_array,le_array):
@@ -45,9 +45,7 @@ if __name__ == '__main__':
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_lens_gal_id = agn_lens_gal_id.astype('int')
 #----------------------------------------------------------------------------
-    agn_id, agn_ra, agn_dec, agn_mag_norm, agn_redshift, agn_twinkles_id,
-    agn_image_num, agn_lens_gal_id =
-    np.loadtxt("./twinkles_DESC_SLAC/sprinkled_agn_230_catids.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
+    agn_id, agn_ra, agn_dec, agn_mag_norm, agn_redshift, agn_twinkles_id, agn_image_num, agn_lens_gal_id = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_agn_230_catids.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
     agn_id = agn_id.astype('int')
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_lens_gal_id = agn_lens_gal_id.astype('int')

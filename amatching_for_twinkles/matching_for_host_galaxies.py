@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import numpy as np
-import pyfits
+import astropy.io.fits as pyfits
 apr = 206269.43
 
 
-#----------------------------------------------------------------------------
 def create_inputs_for_ray_tracing_agnid(agnid):
     agn_id, agn_ra, agn_dec, agn_mag, agn_sed, agn_redshift, agn_catsim_id, agn_twinkles_id, agn_img_num = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_agn_230_catids.txt", dtype="str", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
 
@@ -82,6 +81,29 @@ def create_inputs_for_ray_tracing_agnid(agnid):
 if __name__ == '__main__':
     agnid_tmp = 794901004316
     lens_cats_tmp, srcs_cats_tmp = create_inputs_for_ray_tracing_agnid(agnid_tmp)
+  #  print lens_cats_tmp, srcs_cats_tmp
 
-    print lens_cats_tmp
-    print srcs_cats_tmp
+
+def create_inputs_for_ray_tracing():
+#----------------------------------------------------------------------------
+    lens_catt, srcs_catt = create_inputs_for_ray_tracing_agnid(agnid_tmp)
+
+    return lens_catt, srcs_catt
+
+if __name__ == '__main__':
+    lens_catt_tmp, srcs_catt_tmp = create_inputs_for_ray_tracing()
+
+    phile = open("lens.cat","w")
+   # print >> phile, lens_cattt.values()
+    #print >> phile, srcs_cattt.values()
+
+ #   print lens_catt_tmp.values()[0]
+    aaa = srcs_catt_tmp[0]
+    bbb = srcs_catt_tmp[1]
+ #   print bbb.values()[1]
+
+    print aaa
+
+    print >> phile, lens_catt_tmp.values()[5], lens_catt_tmp.values()[6], lens_catt_tmp.values()[1], lens_catt_tmp.values()[3], lens_catt_tmp.values()[0], lens_catt_tmp.values()[2], aaa.values()[7], aaa.values()[6], aaa.values()[0], aaa.values()[4], aaa.values()[5], aaa.values()[2], aaa.values()[8], aaa.values()[3]
+    print >> phile, lens_catt_tmp.values()[5], lens_catt_tmp.values()[6], lens_catt_tmp.values()[1], lens_catt_tmp.values()[3], lens_catt_tmp.values()[0], lens_catt_tmp.values()[2], bbb.values()[7], bbb.values()[6], bbb.values()[0], bbb.values()[4], bbb.values()[5], bbb.values()[2], bbb.values()[8], bbb.values()[3]
+#----------------------------------------------------------------------------

@@ -5,7 +5,7 @@ from astropy import constants as const
 import pylab as pl
 import scipy.special as spf
 import om10
-import pyfits
+import astropy.io.fits as pyfits
 
 apr = 206269.43
 # m = M + 5 log10 d/(1pc) - 5

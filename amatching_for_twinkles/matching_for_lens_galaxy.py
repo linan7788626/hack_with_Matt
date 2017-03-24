@@ -2,7 +2,7 @@
 import numpy as np
 from astropy.cosmology import Planck13 as p13
 import catalogize_lensed_images as sersic
-import pyfits
+import astropy.io.fits as pyfits
 apr = 206269.43
 
 def return_re_le(sv_input,sv_array,re_array,le_array):
