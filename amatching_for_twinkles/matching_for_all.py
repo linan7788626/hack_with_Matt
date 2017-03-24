@@ -45,9 +45,9 @@ if __name__ == '__main__':
     agn_id = agn_id.astype('int')
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_lens_gal_id = agn_lens_gal_id.astype('int')
-#----------------------------------------------------------------------------
-    host_id, host_ra, host_dec, host_mag_norm, host_redshift, host_major_axis, host_minor_axis = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_lens_galaxies_230.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
-    host_id = host_id.astype('int')
+# #----------------------------------------------------------------------------
+    # host_id, host_ra, host_dec, host_mag_norm, host_redshift, host_major_axis, host_minor_axis = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_lens_galaxies_230.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
+    # host_id = host_id.astype('int')
 #----------------------------------------------------------------------------
     hdulist = pyfits.open('./twinkles_DESC_SLAC/twinkles_lenses_v2.fits')
 
@@ -63,20 +63,22 @@ if __name__ == '__main__':
 
     xl1 = 0.0
     xl2 = 0.0
-    lens_cat = [xl1, xl2, ql, vd, phi, zd, twinklesid]
+    lens_cat = [xl1, xl2, vd, ql, phi, zd, twinklesid]
 
-    print "[xl1, xl2, vd, ql, phl, zd, twinkle_id]"
+    print "Lens: [xl1, xl2, vd, ql, phl, zd, twinkle_id]"
     print lens_cat
 
-    ndex = 4
-    mag_src = "from Bryce"
-    major = "from Bryce"
-    minor = "from Bryce"
-    phs = "from Bryce"
-    zs = "from Bryce"
+    host_id, host_ra, host_dec,host_mag_norm, host_redshift, host_major_axis, host_minor_axis, host_position_angle, host_sindex, host_catsim_id = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_hosts_230.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=(0, 1, 2, 3, 5, 7,8,9,10,11), unpack=True, ndmin=0)
 
-    host_cat = [xs, ys, mag_src, np.sqrt(major*minor), minor/major, phs, ndex, zs, twinklesid]
-    print "[ysc1, ysc2, mag_tot, Reff, qs, phs, ndex, zs, twinkle_id]"
+    mag_src = host_mag_norm[0]
+    major = host_major_axis[0]
+    minor = host_minor_axis[0]
+    phs = host_position_angle[0]
+    zs = host_redshift[0]
+    ndex = host_sindex[0]
+
+    host_cat = [xs, ys, mag_src, np.sqrt(major*minor), minor/major, phs, ndex, zs]
+    print "Host: [ysc1, ysc2, mag_tot, Reff, qs, phs, ndex, zs]"
     print host_cat
 
 #----------------------------------------------------------------------------
@@ -85,11 +87,23 @@ if __name__ == '__main__':
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_lens_gal_id = agn_lens_gal_id.astype('int')
 #----------------------------------------------------------------------------
-    lgal_id, lgal_ra, lgal_dec, lgal_mag_norm, lgal_redshift, lgal_major_axis, lgal_minor_axis = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_lens_galaxies_230.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
+    lgal_id, lgal_ra, lgal_dec, lgal_mag_norm, lgal_redshift, lgal_major_axis, lgal_minor_axis = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_lens_galaxies_230.txt", dtype="string", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
     lgal_id = lgal_id.astype('int')
 
+
+    xc1 = lgal_ra[0]
+    xc2 = lgal_dec[0]
+    mag_tot = lgal_mag_norm[0]
+    Reff_a = lgal_major_axis[0]
+    Reff_b = lgal_minor_axis[0]
+    ndex = 4.0
+    phl = phi
+    zl = zd
+
+    lgal_cat = [xc1, xc2, mag_tot, Reff_a, Reff_b, phl, ndex, zl]
+
 #----------------------------------------------------------------------------
-    print "Lgal: [xc1, xc2, mag_tot, Reff_a, Reff_b, Theta, ndex, zl, lid]"
+    print "Lgal: [xc1, xc2, mag_tot, Reff_a, Reff_b, Theta, ndex, zl]"
     print lgal_cat
 
 #----------------------------------------------------------------------------

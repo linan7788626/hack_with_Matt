@@ -45,6 +45,13 @@ if __name__ == '__main__':
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_lens_gal_id = agn_lens_gal_id.astype('int')
 #----------------------------------------------------------------------------
+    agn_id, agn_ra, agn_dec, agn_mag_norm, agn_redshift, agn_twinkles_id,
+    agn_image_num, agn_lens_gal_id =
+    np.loadtxt("./twinkles_DESC_SLAC/sprinkled_agn_230_catids.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
+    agn_id = agn_id.astype('int')
+    agn_twinkles_id = agn_twinkles_id.astype('int')
+    agn_lens_gal_id = agn_lens_gal_id.astype('int')
+#----------------------------------------------------------------------------
     host_id, host_ra, host_dec, host_mag_norm, host_redshift, host_major_axis, host_minor_axis = np.loadtxt("./twinkles_DESC_SLAC/sprinkled_lens_galaxies_230.txt", comments='#', delimiter=',', converters=None, skiprows=1, usecols=None, unpack=True, ndmin=0)
     host_id = host_id.astype('int')
 #----------------------------------------------------------------------------
