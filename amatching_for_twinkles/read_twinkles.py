@@ -17,6 +17,8 @@ def filter_out_img1():
     twinklesid = agn_twinkles_id
     hdulist = pyfits.open('./twinkles_DESC_SLAC/twinkles_lenses_v2.fits')
 
+    print hdulist[1].header
+
     ys1 = hdulist[1].data['XSRC'][twinklesid]
     ys2 = hdulist[1].data['YSRC'][twinklesid]
 
@@ -37,9 +39,9 @@ def filter_out_img1():
     agnYs2 = ys2[idx]
     agnImgMag = magnification_limg[idx]
 
-    print "# AGN_ID, AGN_RA, AGN_DEC, AGN_ABMAG, AGN_SED, AGN_RedShift, AGN_CatSim_ID, AGN_Twinkles_ID, AGN_IMG_NUM, AGN_SRC_y1, AGN_SRC_y2, AGN_IMG_MAG"
-    for i in xrange(len(agnId)):
-        print agnId[i], agnRa[i], agnDec[i], agnMag[i], agnSed[i], agnRedshift[i], agnCatsim_id[i], agnTwinkles_id[i], agnImg_num[i], agnYs1[i], agnYs2[i], agnImgMag[i]
+    # print "# AGN_ID, AGN_RA, AGN_DEC, AGN_ABMAG, AGN_SED, AGN_RedShift, AGN_CatSim_ID, AGN_Twinkles_ID, AGN_IMG_NUM, AGN_SRC_y1, AGN_SRC_y2, AGN_IMG_MAG"
+    # for i in xrange(len(agnId)):
+        # print agnId[i], agnRa[i], agnDec[i], agnMag[i], agnSed[i], agnRedshift[i], agnCatsim_id[i], agnTwinkles_id[i], agnImg_num[i], agnYs1[i], agnYs2[i], agnImgMag[i]
 
         # mag_src = host_mag[idx_host_components][0]-2.5*np.log10(1.0/magnification_limg)
 
