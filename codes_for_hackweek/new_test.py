@@ -116,6 +116,7 @@ def create_inputs_for_ray_tracing_agnid(agnid):
                     'agnid'        : agnid,
                     'ra'           : host_ra[idx_host][i],
                     'dec'          : host_dec[idx_host][i],
+                    'lensid'       : host_lens_galaxy_uid[idx_host][i],
                     'componentsid' : i}
 
         srcs_cats.append(srcs_cat)
@@ -149,9 +150,7 @@ def create_inputs_for_ray_tracing_agnid(agnid):
                      'zl'         : lens_gals_redshift[idx_lens_gals][0],
                      'twinklesid' : twinklesid,
                      'lensid'     : lens_galaxy_uID[0]}
-
 #--------------------------------------------------------------------
-
     return lens_gals_cat, lens_cat, srcs_cats
 #--------------------------------------------------------------------
 # Construct regular grids
@@ -164,60 +163,6 @@ def make_r_coor(nc,dsx):
 
     x1,x2 = np.meshgrid(x1,x2)
     return x1,x2
-#--------------------------------------------------------------------
-# Calculate deflection angles
-#
-def lens_equation_sie(x1,x2,xc1,xc2,q,rc,re,pha):
-
-    phirad = np.deg2rad(pha)
-    cosa = np.cos(phirad)
-    sina = np.sin(phirad)
-
-    xt1 = (x1-xc1)*cosa+(x2-xc2)*sina
-    xt2 = (x2-xc2)*cosa-(x1-xc1)*sina
-
-    phi = np.sqrt(xt2*xt2+xt1*q*xt1*q+rc*rc)
-    sq = np.sqrt(1.0-q*q)
-    pd1 = phi+rc/q
-    pd2 = phi+rc*q
-    fx1 = sq*xt1/pd1
-    fx2 = sq*xt2/pd2
-    qs = np.sqrt(q)
-
-    a1 = qs/sq*np.arctan(fx1)
-    a2 = qs/sq*np.arctanh(fx2)
-
-    xt11 = cosa
-    xt22 = cosa
-    xt12 = sina
-    xt21 =-sina
-
-    fx11 = xt11/pd1-xt1*(xt1*q*q*xt11+xt2*xt21)/(phi*pd1*pd1)
-    fx22 = xt22/pd2-xt2*(xt1*q*q*xt12+xt2*xt22)/(phi*pd2*pd2)
-    fx12 = xt12/pd1-xt1*(xt1*q*q*xt12+xt2*xt22)/(phi*pd1*pd1)
-    fx21 = xt21/pd2-xt2*(xt1*q*q*xt11+xt2*xt21)/(phi*pd2*pd2)
-
-    a11 = qs/(1.0+fx1*fx1)*fx11
-    a22 = qs/(1.0-fx2*fx2)*fx22
-    a12 = qs/(1.0+fx1*fx1)*fx12
-    a21 = qs/(1.0-fx2*fx2)*fx21
-
-    rea11 = (a11*cosa-a21*sina)*re
-    rea22 = (a22*cosa+a12*sina)*re
-    rea12 = (a12*cosa-a22*sina)*re
-    rea21 = (a21*cosa+a11*sina)*re
-
-    y11 = 1.0-rea11
-    y22 = 1.0-rea22
-    y12 = 0.0-rea12
-    y21 = 0.0-rea21
-
-    jacobian = y11*y22-y12*y21
-    mu = 1.0/jacobian
-
-    res1 = (a1*cosa-a2*sina)*re
-    res2 = (a2*cosa+a1*sina)*re
-    return res1,res2,mu
 #--------------------------------------------------------------------
 # Rotate regular grids
 #
@@ -322,7 +267,7 @@ def generate_lensed_host(agnID):
         lens_ra = lgalP['ra']
         lens_dec = lgalP['dec']
 
-        file_limg = "./outputs_fits/"+str(agnID)+"_"+str(i)+"_"+str(lens_ra)+"_"+str(lens_dec)+"_"+str(lensed_mag)+"_"+str(srcsP[i]['sed_src'].split("/")[0])+"_"+str(srcsP[i]['sed_src'].split("/")[1])+"_"+str(srcsP[i]['zs'])+"_"+str(dsx)+".fits"
+        file_limg = "./outputs_fits/"+str(srcsP[i]['lensid'])+"_"+str(i)+"_"+str(lens_ra)+"_"+str(lens_dec)+"_"+str(lensed_mag)+"_"+str(srcsP[i]['sed_src'].split("/")[0])+"_"+str(srcsP[i]['sed_src'].split("/")[1])+"_"+str(srcsP[i]['zs'])+"_"+str(dsx)+".fits"
         pyfits.writeto(file_limg, lensed_image.astype("float32"), overwrite=True)
 
         # cmd = "bzip2 -f " + file_limg
@@ -333,6 +278,6 @@ def generate_lensed_host(agnID):
 if __name__ == '__main__':
     AGN_ID = np.loadtxt("./twinkles_DESC_SLAC/filter_0_sprinkled_AGNs.txt", dtype="int", comments='#', delimiter=' ', converters=None, skiprows=1, usecols=(0,), unpack=True, ndmin=0)
 
-    for i in AGN_ID[:1]:
+    for i in AGN_ID:
         print i
         generate_lensed_host(i)
