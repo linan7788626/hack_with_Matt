@@ -43,6 +43,12 @@ def create_inputs_for_ray_tracing_agnid(agnid):
     ext_shr = hdulist[1].data['GAMMA'][twinklesid]
     ext_phi = hdulist[1].data['PHIG'][twinklesid]
 
+    ximg = hdulist[1].data['XIMG'][twinklesid]
+    yimg = hdulist[1].data['YIMG'][twinklesid]
+
+    print ximg
+    print yimg
+
     lens_cat = {'xl1'        : xl1,
                 'xl2'        : xl2,
                 'ql'         : ql,
@@ -267,8 +273,8 @@ def generate_lensed_host(agnID):
         lens_ra = lgalP['ra']
         lens_dec = lgalP['dec']
 
-        file_limg = "./outputs_fits/"+str(srcsP[i]['lensid'])+"_"+str(i)+"_"+str(lens_ra)+"_"+str(lens_dec)+"_"+str(lensed_mag)+"_"+str(srcsP[i]['sed_src'].split("/")[0])+"_"+str(srcsP[i]['sed_src'].split("/")[1])+"_"+str(srcsP[i]['zs'])+"_"+str(dsx)+".fits"
-        pyfits.writeto(file_limg, lensed_image.astype("float32"), overwrite=True)
+        # file_limg = "./outputs_fits/"+str(srcsP[i]['lensid'])+"_"+str(i)+"_"+str(lens_ra)+"_"+str(lens_dec)+"_"+str(lensed_mag)+"_"+str(srcsP[i]['sed_src'].split("/")[0])+"_"+str(srcsP[i]['sed_src'].split("/")[1])+"_"+str(srcsP[i]['zs'])+"_"+str(dsx)+".fits"
+        # pyfits.writeto(file_limg, lensed_image.astype("float32"), overwrite=True)
 
         # cmd = "bzip2 -f " + file_limg
         # sp.call(cmd, shell=True)
