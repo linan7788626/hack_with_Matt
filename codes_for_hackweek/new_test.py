@@ -3,8 +3,13 @@ from astropy.cosmology import Planck13 as p13
 from astropy import constants as const
 import astropy.io.fits as pyfits
 import scipy.special as spf
-import pot_ext_shears_kappa as psk
-# import pylab as pl
+import om10_lensing_equations as ole
+import lambda_e as lef
+import pylab as pl
+
+import om10
+db = om10.DB(catalog="/Users/uranus/GitHub/OM10/data/qso_mock.fits")
+
 # import subprocess as sp
 
 apr = 206269.43 # arcseconds per rad
@@ -22,6 +27,8 @@ def create_inputs_for_ray_tracing_agnid(agnid):
     agn_twinkles_id = agn_twinkles_id.astype('int')
     agn_img_num = agn_img_num.astype('int')
     agn_lens_galaxy_uID = agn_lens_galaxy_uID.astype('int')
+    agn_ra = agn_ra.astype('double')
+    agn_dec = agn_dec.astype('double')
 
     lens_galaxy_uID = agn_lens_galaxy_uID[idx_agn]
 #----------------------------------------------------------------------------
@@ -29,25 +36,25 @@ def create_inputs_for_ray_tracing_agnid(agnid):
 #
     twinklesid = agn_twinkles_id[idx_agn][0]
     hdulist = pyfits.open('./twinkles_DESC_SLAC/twinkles_lenses_v2.fits')
-    # lid = hdulist[1].data['LENSID'][twinklesid]
+    # print hdulist[1].header   # needed from OM10
+
+    idx = hdulist[1].data['twinklesId'] == twinklesid
+    lid = hdulist[1].data['LENSID'][idx][0]
     xl1 = 0.0
     xl2 = 0.0
-    vd = hdulist[1].data['VELDISP'][twinklesid]   # needed from OM10
-    zd = hdulist[1].data['ZLENS'][twinklesid]
-    ql  = 1.0 - hdulist[1].data['ELLIP'][twinklesid]
-    phi= hdulist[1].data['PHIE'][twinklesid]
+    vd = hdulist[1].data['VELDISP'][idx][0]   # needed from OM10
+    zd = hdulist[1].data['ZLENS'][idx][0]
+    ql  = 1.0 - hdulist[1].data['ELLIP'][idx][0]
+    phi= hdulist[1].data['PHIE'][idx][0]
 
-    ys1 = hdulist[1].data['XSRC'][twinklesid]
-    ys2 = hdulist[1].data['YSRC'][twinklesid]
+    ys1 = hdulist[1].data['XSRC'][idx][0]
+    ys2 = hdulist[1].data['YSRC'][idx][0]
 
-    ext_shr = hdulist[1].data['GAMMA'][twinklesid]
-    ext_phi = hdulist[1].data['PHIG'][twinklesid]
+    ext_shr = hdulist[1].data['GAMMA'][idx][0]
+    ext_phi = hdulist[1].data['PHIG'][idx][0]
 
-    ximg = hdulist[1].data['XIMG'][twinklesid]
-    yimg = hdulist[1].data['YIMG'][twinklesid]
-
-    print ximg
-    print yimg
+    ximg = hdulist[1].data['XIMG'][idx][0]
+    yimg = hdulist[1].data['YIMG'][idx][0]
 
     lens_cat = {'xl1'        : xl1,
                 'xl2'        : xl2,
@@ -57,8 +64,10 @@ def create_inputs_for_ray_tracing_agnid(agnid):
                 'gamma'      : ext_shr,
                 'phg'        : ext_phi,
                 'zl'         : zd,
+                'ximg'       : ximg,
+                'yimg'       : yimg,
                 'twinklesid' : twinklesid,
-                'lensid'     : lens_galaxy_uID[0]}
+                'lensid'     : lid}
 
     # TTYPE8  = 'GAMMA'   TTYPE9  = 'PHIG    '
 #----------------------------------------------------------------------------
@@ -85,18 +94,6 @@ def create_inputs_for_ray_tracing_agnid(agnid):
     idx_host2 = host_twinkles_img_num == 0
     idx_host = idx_host1&idx_host2
 
-    # print host_ra[idx_host]
-    # print host_dec[idx_host]
-    # print host_mag[idx_host]
-    # print host_major_axis[idx_host]
-    # print host_minor_axis[idx_host]
-    # print host_positionAngle[idx_host]
-    # print host_spatialmodel[idx_host]
-    # print host_sindex[idx_host]
-    # print host_redshift[idx_host]
-    # print host_twinkles_system[idx_host]
-    # print host_lens_galaxy_uid[idx_host]
-
     srcs_cats = []
     for i in xrange(len(host_mag[idx_host])):
         srcs_cat = {}
@@ -108,6 +105,7 @@ def create_inputs_for_ray_tracing_agnid(agnid):
         phs = host_positionAngle[idx_host][i]
         ns = host_sindex[idx_host][i]
         zs = host_redshift[idx_host][i]
+        # zs = hdulist[1].data['ZSRC'][idx][0]
         sed_src = host_sed[idx_host][i]
 
         srcs_cat = {'ys1'          : ys1,
@@ -122,6 +120,8 @@ def create_inputs_for_ray_tracing_agnid(agnid):
                     'agnid'        : agnid,
                     'ra'           : host_ra[idx_host][i],
                     'dec'          : host_dec[idx_host][i],
+                    'lensed_agn_ra': agn_ra[idx_agn][0],
+                    'lensed_agn_dec': agn_dec[idx_agn][0],
                     'lensid'       : host_lens_galaxy_uid[idx_host][i],
                     'componentsid' : i}
 
@@ -212,15 +212,17 @@ def lensed_sersic(xi1,xi2,source_cat,lens_cat):
 
     xlc1 = lens_cat[0]          # x position of the lens, arcseconds
     xlc2 = lens_cat[1]          # y position of the lens, arcseconds
-    rlc  = 0.0                  # core size of Non-singular Isothermal Ellipsoid
-    rle  = re_sv(lens_cat[2],lens_cat[5],source_cat[7])       #Einstein radius of lens, arcseconds.
+    # rle  = re_sv(lens_cat[2],lens_cat[5],source_cat[7])       #Einstein radius of lens, arcseconds.
+    rle = ole.re_sv(lens_cat[2],lens_cat[5],source_cat[7])
+
     ql   = lens_cat[3]          # axis ratio b/a
     phl = lens_cat[4]           # orientation, degree
     ext_shears = lens_cat[6]
     ext_angle = lens_cat[7]
     #----------------------------------------------------------------------
-    # ai1,ai2,mua = lens_equation_sie(xi1,xi2,xlc1,xlc2,ql,rlc,rle,phl)
-    ai1,ai2 = psk.deflection_nie(xlc1, xlc2, phl, ql, rle, rlc, ext_shears, ext_angle, 0.0, xi1, xi2)  # SIE lens model
+    le = lef.lambda_e_tot(1.0-ql)
+
+    ai1, ai2 = ole.alphas_sie(xlc1, xlc2, phl, ql, rle, le, ext_shears, ext_angle, 0.0, xi1, xi2)
 
     yi1 = xi1-ai1
     yi2 = xi2-ai2
@@ -258,7 +260,7 @@ def generate_lensed_host(agnID):
         # parameters of the host galaxy of lensed point source
         #
         srcs_cats = [srcsP[i]['ys1'], srcsP[i]['ys2'], srcsP[i]['mag_src'], srcsP[i]['Reff_src'], srcsP[i]['qs'], srcsP[i]['phs'], srcsP[i]['ns'], srcsP[i]['zs']]
-        # print srcs_cats
+
         #-----------------------------------------------------------------------
         # Calculate the lensed images
         #
@@ -270,8 +272,24 @@ def generate_lensed_host(agnID):
         #
         lensed_mag, lensed_image = lensed_sersic(xi1,xi2,srcs_cats,lens_cats)
 #----------------------------------------------------------------------------
-        lens_ra = lgalP['ra']
-        lens_dec = lgalP['dec']
+        print lensP['ximg']
+        print lensP['yimg']
+        print (srcsP[i]['lensed_agn_ra']-lgalP['ra'])/np.pi*180/3600.0*apr, (srcsP[i]['lensed_agn_dec']-lgalP['dec'])/np.pi*180/3600.0*apr
+
+        # l_id = lensP['lensid']
+        # print l_id
+        # lens_tmp = db.get_lens(l_id)
+        # om10.plot_lens(lens_tmp)
+
+        pl.figure(figsize=(8,8))
+        pl.contourf(xi1,xi2,lensed_image)
+        pl.plot(lensP['ximg'][np.nonzero(lensP['ximg'])], \
+                lensP['yimg'][np.nonzero(lensP['yimg'])], 'bx')
+
+        # pl.savefig("./outputs_pngs/"+str(agnID)+"_"+str(i)+".png")
+
+        # lens_ra = lgalP['ra']
+        # lens_dec = lgalP['dec']
 
         # file_limg = "./outputs_fits/"+str(srcsP[i]['lensid'])+"_"+str(i)+"_"+str(lens_ra)+"_"+str(lens_dec)+"_"+str(lensed_mag)+"_"+str(srcsP[i]['sed_src'].split("/")[0])+"_"+str(srcsP[i]['sed_src'].split("/")[1])+"_"+str(srcsP[i]['zs'])+"_"+str(dsx)+".fits"
         # pyfits.writeto(file_limg, lensed_image.astype("float32"), overwrite=True)
@@ -284,6 +302,8 @@ def generate_lensed_host(agnID):
 if __name__ == '__main__':
     AGN_ID = np.loadtxt("./twinkles_DESC_SLAC/filter_0_sprinkled_AGNs.txt", dtype="int", comments='#', delimiter=' ', converters=None, skiprows=1, usecols=(0,), unpack=True, ndmin=0)
 
-    for i in AGN_ID:
+    for i in AGN_ID[:10]:
         print i
         generate_lensed_host(i)
+
+    pl.show()

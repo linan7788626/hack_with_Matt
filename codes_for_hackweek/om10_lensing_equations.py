@@ -99,6 +99,7 @@ def gauss_2d(x, y, xc, yc, sig):
 
 
 if __name__ == '__main__':
+    print lef.lambda_e_tot(0.09182339)
     bsz = 4.0
     nnn = 512
     dsx = bsz/nnn
@@ -108,8 +109,10 @@ if __name__ == '__main__':
     db = om10.DB(catalog="/Users/uranus/GitHub/OM10/data/qso_mock.fits")
     # lid = 7176527
     # lid = 8519202
-    lid = 30184793
+    # lid = 30184793
     # lid = 14864406
+    # lid = 347938
+    lid = 21393434
     lens = db.get_lens(lid)
 
     om10.plot_lens(lens)
@@ -134,9 +137,13 @@ if __name__ == '__main__':
 
     re0 = re_sv(vd, zl, zs)
 
+    print vd, zl ,zs
+
     kap = kappa_sie(0.0, 0.0, ph, ql, re0, le, x1, x2)
 
     al1, al2 = alphas_sie(0.0, 0.0, ph, ql, re0, le, ex_shs, ex_sha, 0.0, x1, x2)
+
+    print re0, le, ql, ph, ex_shs, ex_sha
 
     yi1 = x1 - al1
     yi2 = x2 - al2
