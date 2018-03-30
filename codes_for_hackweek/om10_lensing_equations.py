@@ -111,8 +111,7 @@ if __name__ == '__main__':
     # lid = 8519202
     # lid = 30184793
     # lid = 14864406
-    # lid = 347938
-    lid = 21393434
+    lid = 347938
     lens = db.get_lens(lid)
 
     om10.plot_lens(lens)

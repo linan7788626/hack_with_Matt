@@ -141,15 +141,30 @@ def lambda_e_prol(e):
     f2 = 1.0-e
     f2_p = np.sqrt(1.0-f2*f2)
     q3_max = 3.46717
+
     t_min = f2_p/f2/np.sqrt(q3_max*q3_max-1.0)
 
-    res = Integral_ud(t_min,1.0, \
+    if t_min <= 1.0:
+        res = Integral_ud(t_min,1.0, \
                        lambda t: (np.sqrt((t*t*f2*f2+f2_p*f2_p) \
-                                          /(f2*(1-t*t)))/t)) \
+                                          /(f2*(1.0-t*t)))/t)) \
         / Integral_ud(t_min,1.0, \
                        lambda t: (((WX_prol_qt(t, f2)-WZ_prol_qt(t, f2))*t*t \
-                                   +WZ_prol_qt(t, f2))/np.sqrt(1-t*t)))
-
+                                   +WZ_prol_qt(t, f2))/np.sqrt(1.0-t*t)))
+    else:
+        res = Integral_ud(1.0/t_min,1.0, \
+                       lambda t: (np.sqrt((t*t*f2*f2+f2_p*f2_p) \
+                                          /(f2*(1.0-t*t)))/t)) \
+        / Integral_ud(1.0/t_min,1.0, \
+                       lambda t: (((WX_prol_qt(t, f2)-WZ_prol_qt(t, f2))*t*t \
+                                   +WZ_prol_qt(t, f2))/np.sqrt(1.0-t*t)))
+    # else:
+        # res = Integral_ud(1.0, t_min,\
+                       # lambda t: (np.sqrt((t*t*f2*f2+f2_p*f2_p) \
+                                          # /(f2*(t*t-1.0)))/t)) \
+        # / Integral_ud(1.0,t_min, \
+                       # lambda t: (((WX_prol_qt(t, f2)-WZ_prol_qt(t, f2))*t*t \
+                                   # +WZ_prol_qt(t, f2))/np.sqrt(t*t-1.0)))
     return res
 
 
@@ -159,7 +174,7 @@ def lambda_e_tot(e, ef=0.5):
 
 
 if __name__ == '__main__':
-    et = np.linspace(1e-6, 0.6, 20)
+    et = np.linspace(1e-6, 0.9, 20)
 
     lto = np.array(map(lambda_e_obl, et))**2.0 - 1.0
     ltp = np.array(map(lambda_e_prol, et))**2.0 - 1.0
