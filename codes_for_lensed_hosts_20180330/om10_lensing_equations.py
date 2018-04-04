@@ -113,7 +113,7 @@ def xy_rotate(x, y, xcen, ycen, phi):
 #--------------------------------------------------------------------
 # 2D Sersic Profile, Peak = 1.0
 #
-def sersic_2d(xi1,xi2,xc1,xc2,Reff_arc,ql,pha,ndex=4.0):
+def sersic_2d(xi1,xi2,xc1,xc2,Reff_arc,ql,pha,ndex):
     bn = 2.0*ndex-1/3.0+0.009876/ndex
     (xi1new,xi2new) = xy_rotate(xi1, xi2, xc1, xc2, pha)
     R_scale = np.sqrt((xi1new**2)*ql+(xi2new**2)/ql)/Reff_arc
